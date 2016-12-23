@@ -198,7 +198,7 @@ class BotMan
             $pattern = $messageData['pattern'];
             $callback = $messageData['callback'];
 
-            if (! $callback instanceof Closure || !$callback instanceof BotCommand) {
+            if (! $callback instanceof Closure && !$callback instanceof BotCommand) {
                 list($class, $method) = explode('@', $callback);
                 $callback = [new $class, $method];
             }
