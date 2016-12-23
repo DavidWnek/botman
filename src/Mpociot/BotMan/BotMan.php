@@ -162,6 +162,15 @@ class BotMan
     }
 
     /**
+     * @param BotCommand $command
+     * @return BotMan
+     */
+    public function hearsCommand(BotCommand $command)
+    {
+        return $this->hears($command->getName(), $command->hears($this));
+    }
+
+    /**
      * @param string $pattern the pattern to listen for
      * @param Closure|string $callback the callback to execute. Either a closuer or a Class@method notation
      * @param string $in the channel type to listen to (either direct message or public channel)
