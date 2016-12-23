@@ -56,6 +56,11 @@ class BotMan
     /** @var CacheInterface */
     private $cache;
 
+    /**
+     * @var string
+     */
+    private $command;
+
     /** @var bool */
     protected $loadedConversation = false;
 
@@ -76,6 +81,9 @@ class BotMan
         $this->driver = $driver;
         $this->config = $config;
 
+        if(array_key_exists('command', $config)) {
+            $this->command = $config['command'];
+        }
         $this->loadActiveConversation();
     }
 
@@ -217,7 +225,11 @@ class BotMan
         $answerText = $this->getConversationAnswer()->getValue();
 
         $text = '/^'.preg_replace('/\{(\w+?)\}/', '(.*)', $pattern).'$/i';
-        $regexMatched = (bool) preg_match($text, $messageText, $matches) || (bool) preg_match($text, $answerText, $matches);
+
+        $commandLength = strlen($this->command) + 1;
+        $regexMatched = (substr($messageText, 0, $commandLength) === sprintf('/%s', $this->command)
+            && substr($messageText, $commandLength+1, strlen($pattern)) === $pattern
+            ) || (bool) preg_match($text, $answerText, $matches);
 
         // Try middleware first
         foreach ($this->middleware as $middleware) {
