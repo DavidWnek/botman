@@ -211,7 +211,7 @@ class BotMan
                     $this->matches = $parameters;
                     array_unshift($parameters, $this);
                     if($callback instanceof BotCommand) {
-                        $callback->hears($parameters);
+                        $callback->hears($this);
                     } else {
                         call_user_func_array($callback, $parameters);
                     }
