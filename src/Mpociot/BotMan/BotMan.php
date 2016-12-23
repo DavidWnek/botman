@@ -167,7 +167,7 @@ class BotMan
      */
     public function hearsCommand(BotCommand $command)
     {
-        return $this->hears($command->getName(), $command->hears($this));
+        return $this->hears($command->getName(), $command);
     }
 
     /**
@@ -198,7 +198,7 @@ class BotMan
             $pattern = $messageData['pattern'];
             $callback = $messageData['callback'];
 
-            if (! $callback instanceof Closure) {
+            if (! $callback instanceof Closure || !$callback instanceof BotCommand) {
                 list($class, $method) = explode('@', $callback);
                 $callback = [new $class, $method];
             }
@@ -210,7 +210,11 @@ class BotMan
                     $parameters = array_combine($this->compileParameterNames($pattern), array_slice($matches, 1));
                     $this->matches = $parameters;
                     array_unshift($parameters, $this);
-                    call_user_func_array($callback, $parameters);
+                    if($callback instanceof BotCommand) {
+                        $callback->hears($parameters);
+                    } else {
+                        call_user_func_array($callback, $parameters);
+                    }
                 }
             }
         }
